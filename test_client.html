@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Service Persona – Test Client</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --border: #2a2a32;
+    --accent: #6ee7b7;
+    --accent2: #f472b6;
+    --accent3: #60a5fa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --get: #34d399;
+    --post: #60a5fa;
+    --put: #fbbf24;
+    --delete: #f87171;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  header h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p {
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    margin-top: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .5px;
+  }
+  .badge-get    { background: #052e16; color: var(--get); }
+  .badge-post   { background: #1e3a5f; color: var(--post); }
+  .badge-put    { background: #451a03; color: var(--put); }
+  .badge-delete { background: #450a0a; color: var(--delete); }
+
+  .card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .card p.desc {
+    font-size: .88rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: .8rem;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: #0d0d0f;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 110px; }
+
+  button {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    letter-spacing: .3px;
+  }
+  button:hover   { opacity: .85; }
+  button:active  { transform: scale(.97); }
+
+  .btn-get    { background: var(--get);    color: #052e16; }
+  .btn-post   { background: var(--post);   color: #0f172a; }
+  .btn-put    { background: var(--put);    color: #1c1003; }
+  .btn-delete { background: var(--delete); color: #1c0202; }
+
+  .response-box {
+    background: #0d0d0f;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    color: #94a3b8;
+    min-height: 70px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  .response-box.ok    { color: var(--get);    border-color: #052e16; }
+  .response-box.err   { color: var(--delete); border-color: #450a0a; }
+
+  .endpoint-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    color: var(--accent3);
+    background: #1e3a5f33;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Web Service &lt;Persona&gt;</h1>
+  <p>CRUD REST API · PHP + MariaDB · XAMPP</p>
+</header>
+
+<div class="grid">
+
+  <!-- ── GET ALL ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-get">GET</span>
+      <h2>Leggi tutte le persone</h2>
+    </div>
+    <span class="endpoint-label">/api/persona.php</span>
+    <p class="desc">Restituisce l'elenco completo. Filtra opzionalmente per nome/cognome.</p>
+    <div>
+      <label>Filtro nome (opzionale)</label>
+      <input type="text" id="filter-nome" placeholder="es. mario">
+    </div>
+    <div>
+      <label>Filtro cognome (opzionale)</label>
+      <input type="text" id="filter-cognome" placeholder="es. rossi">
+    </div>
+    <button class="btn-get" onclick="getAll()">Esegui GET</button>
+    <div class="response-box" id="res-getall">// risposta qui...</div>
+  </div>
+
+  <!-- ── GET ONE ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-get">GET</span>
+      <h2>Leggi una persona per ID</h2>
+    </div>
+    <span class="endpoint-label">/api/persona.php?id=N</span>
+    <p class="desc">Restituisce una singola persona cercata per chiave primaria.</p>
+    <div>
+      <label>ID persona</label>
+      <input type="number" id="get-id" placeholder="es. 1" min="1">
+    </div>
+    <button class="btn-get" onclick="getOne()">Esegui GET</button>
+    <div class="response-box" id="res-getone">// risposta qui...</div>
+  </div>
+
+  <!-- ── POST ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-post">POST</span>
+      <h2>Crea nuova persona</h2>
+    </div>
+    <span class="endpoint-label">/api/persona.php</span>
+    <p class="desc">Inserisce una nuova riga. Nome, cognome ed email sono obbligatori.</p>
+    <div>
+      <label>nome *</label>
+      <input type="text" id="post-nome" placeholder="Mario">
+    </div>
+    <div>
+      <label>cognome *</label>
+      <input type="text" id="post-cognome" placeholder="Rossi">
+    </div>
+    <div>
+      <label>email *</label>
+      <input type="email" id="post-email" placeholder="mario.rossi@email.com">
+    </div>
+    <div>
+      <label>eta</label>
+      <input type="number" id="post-eta" placeholder="30" min="0" max="120">
+    </div>
+    <button class="btn-post" onclick="createPersona()">Esegui POST</button>
+    <div class="response-box" id="res-post">// risposta qui...</div>
+  </div>
+
+  <!-- ── PUT ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-put">PUT</span>
+      <h2>Aggiorna persona</h2>
+    </div>
+    <span class="endpoint-label">/api/persona.php?id=N</span>
+    <p class="desc">Modifica parziale: invia solo i campi da aggiornare in JSON.</p>
+    <div>
+      <label>ID persona da modificare *</label>
+      <input type="number" id="put-id" placeholder="es. 1" min="1">
+    </div>
+    <div>
+      <label>Corpo JSON (campi da aggiornare)</label>
+      <textarea id="put-body">{"nome": "Luca", "eta": 25}</textarea>
+    </div>
+    <button class="btn-put" onclick="updatePersona()">Esegui PUT</button>
+    <div class="response-box" id="res-put">// risposta qui...</div>
+  </div>
+
+  <!-- ── DELETE ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-delete">DELETE</span>
+      <h2>Elimina persona</h2>
+    </div>
+    <span class="endpoint-label">/api/persona.php?id=N</span>
+    <p class="desc">Elimina definitivamente la persona con l'ID indicato.</p>
+    <div>
+      <label>ID persona da eliminare *</label>
+      <input type="number" id="del-id" placeholder="es. 2" min="1">
+    </div>
+    <button class="btn-delete" onclick="deletePersona()">Esegui DELETE</button>
+    <div class="response-box" id="res-delete">// risposta qui...</div>
+  </div>
+
+</div>
+
+<script>
+  const BASE = 'http://localhost/persona_api/api/persona.php';
+
+  function show(id, data, ok = true) {
+    const box = document.getElementById(id);
+    box.textContent = JSON.stringify(data, null, 2);
+    box.className = 'response-box ' + (ok ? 'ok' : 'err');
+  }
+
+  async function callApi(url, method = 'GET', body = null) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    const data = await res.json();
+    return { data, ok: res.ok };
+  }
+
+  async function getAll() {
+    const nome    = document.getElementById('filter-nome').value.trim();
+    const cognome = document.getElementById('filter-cognome').value.trim();
+    let url = BASE;
+    const params = new URLSearchParams();
+    if (nome)    params.append('nome', nome);
+    if (cognome) params.append('cognome', cognome);
+    if ([...params].length) url += '?' + params.toString();
+    const { data, ok } = await callApi(url);
+    show('res-getall', data, ok);
+  }
+
+  async function getOne() {
+    const id = document.getElementById('get-id').value;
+    if (!id) return alert('Inserisci un ID');
+    const { data, ok } = await callApi(`${BASE}?id=${id}`);
+    show('res-getone', data, ok);
+  }
+
+  async function createPersona() {
+    const body = {
+      nome:    document.getElementById('post-nome').value.trim(),
+      cognome: document.getElementById('post-cognome').value.trim(),
+      email:   document.getElementById('post-email').value.trim(),
+    };
+    const eta = document.getElementById('post-eta').value;
+    if (eta) body.eta = parseInt(eta);
+    const { data, ok } = await callApi(BASE, 'POST', body);
+    show('res-post', data, ok);
+  }
+
+  async function updatePersona() {
+    const id = document.getElementById('put-id').value;
+    if (!id) return alert('Inserisci un ID');
+    let body;
+    try { body = JSON.parse(document.getElementById('put-body').value); }
+    catch { return alert('JSON non valido nel corpo'); }
+    const { data, ok } = await callApi(`${BASE}?id=${id}`, 'PUT', body);
+    show('res-put', data, ok);
+  }
+
+  async function deletePersona() {
+    const id = document.getElementById('del-id').value;
+    if (!id) return alert('Inserisci un ID');
+    if (!confirm(`Eliminare la persona con ID ${id}?`)) return;
+    const { data, ok } = await callApi(`${BASE}?id=${id}`, 'DELETE');
+    show('res-delete', data, ok);
+  }
+</script>
+</body>
+</html>
