@@ -38,8 +38,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`nome`, `email`, `ID`) VALUES
-('andrea', 'bucignoandrea@gmail.', 1),
-('andrea', 'bucignoandrea@gmail.', 2);
+('andrea', 'rossiandrea@gmail.', 1),
+('andrea', 'rossiandrea@gmail.', 2);
 
 --
 -- Indici per le tabelle scaricate
