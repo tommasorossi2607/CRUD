@@ -5,7 +5,7 @@
 define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'bucigno5dinf');
+define('DB_NAME', 'rossi5dinf');
 
 function getConnection(): mysqli {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
